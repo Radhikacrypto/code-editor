@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import {httpAction} from "./_generated/server"
 import { Webhook } from "svix";
 import { WebhookEvent } from "@clerk/nextjs/server";
+import { api} from "./_generated/api"
 
 const http = httpRouter();
 
@@ -10,7 +11,7 @@ http.route({
     method:"POST",
 
     handler: httpAction(async (ctx, request)=>{
-        const webhookSecret = process.env.CLERK_SECRET;
+        const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
         if(!webhookSecret) {
             throw new Error("missing clerk_webhook_secret enviornment variable");
         }
@@ -56,8 +57,15 @@ http.route({
             try {
                 
                 //save user to db
+
+                await ctx.runMutation(api.users.syncUser, {
+                    userId: id,
+                    email,
+                    name,
+                });
                 
             } catch (error) {
+                console.log("Error creating user: ", error);
                 return new Response (" Error cresting user", {status:500});
             }
         }
