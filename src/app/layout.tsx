@@ -26,17 +26,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    
-    <html lang="en">
+   <ClerkProvider> 
+    <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-gray-100 flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full min-h-screen bg-gradient-to-b from-blue-900 to-blue-950 text-gray-100 flex flex-col `}
       > 
-        <ClerkProvider>
+        
         <ConvexClientProvider> {children} </ConvexClientProvider>
         <Footer/>
-        </ClerkProvider>
+        
       </body>
     </html>
+   </ClerkProvider>
     
   );
 }
