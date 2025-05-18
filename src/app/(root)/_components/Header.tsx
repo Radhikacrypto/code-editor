@@ -71,7 +71,7 @@ async function Header() {
             </Link>
           </nav>
         </div>
-      </div>
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <ThemeSelector />
@@ -98,7 +98,9 @@ async function Header() {
           <div className="pl-3 border-l border-gray-800">
             <HeaderProfileBtn />
           </div>
-         </div> 
+         </div>  
+      </div>
+        
 
 
     </div>
