@@ -29,7 +29,12 @@ function LanguageSelector({hasAccess}:{hasAccess: boolean}) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLanguageSelect= (langId:string)=>{}
+  const handleLanguageSelect= (langId:string)=>{
+    if(!hasAccess && langId!=="javascript") return;
+
+    setLanguage(langId);
+    setIsOpen(false);
+  };
 
     if (!mounted) return null;
 
