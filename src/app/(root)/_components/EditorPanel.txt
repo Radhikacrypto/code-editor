@@ -1,0 +1,89 @@
+What is useEffect?
+In React, useEffect is a special function (called a hook) that lets you run some code when something happens in your component — like:
+
+When the component first shows up on the screen
+
+When some value changes
+
+Or when the component disappears
+
+In your code:
+js
+Copy code
+useEffect(() => {
+  const savedCode = localStorage.getItem(`editor-code-${language}`);
+  const newCode = savedCode || LANGUAGE_CONFIG[language].defaultCode;
+  if (editor) editor.setValue(newCode);
+}, [language]);
+Let’s break this down step-by-step.
+
+What does it do?
+When language changes, the code inside useEffect runs.
+
+It tries to get the saved code for that language from localStorage.
+
+Example: If language is "javascript", it looks for editor-code-javascript in localStorage.
+
+If it finds saved code, it uses that.
+If not, it uses the default code from LANGUAGE_CONFIG.
+
+It then puts that code into the editor using editor.setValue(newCode).
+
+Simple analogy:
+Think of it like this:
+
+🧠 “Whenever the language changes, go check if we have some saved code. If yes, load it. If not, use the default code. Then show that code in the editor.”
+
+Why use useEffect?
+Because in React, when language changes, we want to do something extra — like load and set new code. useEffect helps us do that automatically.
+
+Let me know if you want a fun analogy or animation explanation too!
+
+
+
+
+
+
+
+🧠 What is this doing?
+js
+Copy code
+useEffect(() => {
+  const savedFontSize = localStorage.getItem("editor-font-size");
+  if (savedFontSize) setFontSize(parseInt(savedFontSize));
+}, [setFontSize]);
+This code runs once when the component loads, or if setFontSize changes (which is very rare).
+
+Step-by-step Explanation:
+useEffect(() => { ... }, [setFontSize]);
+This means:
+👉 “Run the code inside only when the component is first shown or if setFontSize changes.”
+
+const savedFontSize = localStorage.getItem("editor-font-size");
+👉 Look inside the browser’s localStorage to see if a saved font size exists.
+
+Example: The saved value might be "18" (as a string).
+
+if (savedFontSize) setFontSize(parseInt(savedFontSize));
+👉 If we found a saved font size, convert it to a number (e.g., "18" becomes 18)
+👉 Then update the editor's font size by calling setFontSize(18).
+
+Simple Analogy 🎨
+When the page opens, we ask the browser:
+“Hey, did the user save a preferred font size last time?”
+If yes, we say: “Cool! Let’s use that font size!”
+
+What is localStorage?
+It's like a tiny notepad inside the browser that remembers things even after you close the page.
+
+Let me know if you want to see how this works with an example or want to add saving font size too!
+
+
+
+
+
+
+
+
+
+
