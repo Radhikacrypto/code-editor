@@ -19,7 +19,7 @@ function EditorPanel() {
     const mounted = useMounted();
 
   useEffect(()=>{
-    const savedCode = localStorage.getItem9(`editor-code-${language}`)
+    const savedCode = localStorage.getItem(`editor-code-${language}`)
     const newCode= savedCode || LANGUAGE_CONFIG[language].defaultCode
     if(editor) editor.setValue(newCode)
   },[language,editor])
@@ -30,12 +30,19 @@ function EditorPanel() {
 
   },[setFontSize]);
 
-  const handleRefresh  = ()=>{}
+  const handleRefresh  = ()=>{
+    const defaultCode=LANGUAGE_CONFIG[language].defaultCode;
+    if(editor) editor.setValue(defaultCode);
+    localStorage.removeItem(`editor-code-${language}`);
 
-  const handleEditorChange = ()=>{}
+  };
+
+  const handleEditorChange = (value:string | undefined)=>{
+    if(value) localStorage.setItem(`editor-code-${language}`, value);
+  }
 
   const handleFontSizeChange = (newSize: number)=>{
-    const size = Math.min(Math.max(newSize,12),2)
+    const size = Math.min(Math.max(newSize,12),24)
     setFontSize(size);
     localStorage.setItem("editor-font-size", size.toString());
   }
@@ -135,7 +142,7 @@ function EditorPanel() {
           {!clerk.loaded && <EditorPanelSkeleton />}
         </div>
       </div>
-      {isShareDialogOpen && <ShareSnippetDialog onClose={() => setIsShareDialogOpen(false)} />}
+     
     </div>
   );
 }
