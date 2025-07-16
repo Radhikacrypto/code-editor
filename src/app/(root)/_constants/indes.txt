@@ -1,0 +1,91 @@
+✅ 1. Imports
+ts
+Copy
+Edit
+import { Monaco } from "@monaco-editor/react";
+import { Theme } from "../../../types";
+You're importing Monaco (the editor instance) and a custom Theme type.
+
+This sets the stage for configuring languages and themes in Monaco.
+
+✅ 2. Language Config
+ts
+Copy
+Edit
+type LanguageConfig = Record<string, { ... }>
+export const LANGUAGE_CONFIG: LanguageConfig = { ... }
+You're defining the supported programming languages like JavaScript, Python, C++, etc.
+
+For each language, you specify:
+
+id: internal identifier
+
+label: user-facing name
+
+logoPath: image path for the language icon
+
+pistonRuntime: used to run the code (via the Piston API)
+
+monacoLanguage: the Monaco Editor's language ID (so it knows how to highlight/format)
+
+defaultCode: example/starter code for each language
+
+🔹 This config helps your app:
+
+Show the right label and logo
+
+Highlight the correct syntax
+
+Load the right default code
+
+Know which runtime to use when sending code to backend API
+
+✅ 3. Themes for the Editor
+ts
+Copy
+Edit
+export const THEMES: Theme[] = [...]
+List of themes like "VS Dark", "Monokai", "GitHub Dark", etc.
+
+Each has:
+
+id: theme name used internally by Monaco
+
+label: name shown to users
+
+color: used for displaying theme color in a UI selector
+
+✅ 4. Theme Definitions
+ts
+Copy
+Edit
+export const THEME_DEFINITONS = { ... }
+Detailed styling for each theme
+
+Includes:
+
+base: whether it's based on dark or light mode
+
+rules: color for keywords, comments, variables, etc.
+
+colors: background, cursor, line highlight, etc.
+
+✅ 5. Define Themes in Monaco
+ts
+Copy
+Edit
+export const defineMonacoThemes = (monaco: Monaco) => {
+  Object.entries(THEME_DEFINITONS).forEach(...)
+}
+This function takes the Monaco instance and registers custom themes using the defineTheme method.
+
+It loops through each theme in THEME_DEFINITONS and applies it in Monaco so users can switch between them.
+
+🔚 In Short:
+This file configures:
+
+Part	Purpose
+LANGUAGE_CONFIG	Holds all code templates, labels, logos, and runtime info for each language
+THEMES	Simple list of available themes
+THEME_DEFINITONS	Custom styles for each theme (Monaco editor colors)
+defineMonacoThemes()	Applies those themes to the Monaco editor at runtime

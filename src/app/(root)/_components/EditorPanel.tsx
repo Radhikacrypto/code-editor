@@ -14,42 +14,41 @@ import ShareSnippetDialog from "./ShareSnippetDialog";
 function EditorPanel() {
   const clerk = useClerk();
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const{ language, theme, fontSize, editor, setFontSize, setEditor} = useCodeEditorStore();
+  const { language, theme, fontSize, editor, setFontSize, setEditor } = useCodeEditorStore();
 
-    const mounted = useMounted();
+  const mounted = useMounted();
 
-  useEffect(()=>{
-    const savedCode = localStorage.getItem(`editor-code-${language}`)
-    const newCode= savedCode || LANGUAGE_CONFIG[language].defaultCode
-    if(editor) editor.setValue(newCode)
-  },[language,editor])
+  useEffect(() => {
+    const savedCode = localStorage.getItem(`editor-code-${language}`);
+    const newCode = savedCode || LANGUAGE_CONFIG[language].defaultCode;
+    if (editor) editor.setValue(newCode);
+  }, [language, editor]);
 
-  useEffect (()=>{
+  useEffect(() => {
     const savedFontSize = localStorage.getItem("editor-font-size");
-    if(savedFontSize) setFontSize(parseInt(savedFontSize));
+    if (savedFontSize) setFontSize(parseInt(savedFontSize));
+  }, [setFontSize]);
 
-  },[setFontSize]);
-
-  const handleRefresh  = ()=>{
-    const defaultCode=LANGUAGE_CONFIG[language].defaultCode;
-    if(editor) editor.setValue(defaultCode);
+  const handleRefresh = () => {
+    const defaultCode = LANGUAGE_CONFIG[language].defaultCode;
+    if (editor) editor.setValue(defaultCode);
     localStorage.removeItem(`editor-code-${language}`);
-
   };
 
-  const handleEditorChange = (value:string | undefined)=>{
-    if(value) localStorage.setItem(`editor-code-${language}`, value);
-  }
+  const handleEditorChange = (value: string | undefined) => {
+    if (value) localStorage.setItem(`editor-code-${language}`, value);
+  };
 
-  const handleFontSizeChange = (newSize: number)=>{
-    const size = Math.min(Math.max(newSize,12),24)
+  const handleFontSizeChange = (newSize: number) => {
+    const size = Math.min(Math.max(newSize, 12), 24);
     setFontSize(size);
     localStorage.setItem("editor-font-size", size.toString());
-  }
+  };
 
-  if(!mounted) return null;
+  if (!mounted) return null;
+
   return (
-     <div className="relative">
+    <div className="relative">
       <div className="relative bg-[#12121a]/90 backdrop-blur rounded-xl border border-white/[0.05] p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -82,6 +81,7 @@ function EditorPanel() {
             </div>
 
             <motion.button
+              // ✅ Important fix
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleRefresh}
@@ -93,6 +93,7 @@ function EditorPanel() {
 
             {/* Share Button */}
             <motion.button
+              // ✅ Important fix
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsShareDialogOpen(true)}
@@ -105,7 +106,7 @@ function EditorPanel() {
           </div>
         </div>
 
-        {/* Editor  */}
+        {/* Editor */}
         <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05]">
           {clerk.loaded && (
             <Editor
@@ -142,9 +143,8 @@ function EditorPanel() {
           {!clerk.loaded && <EditorPanelSkeleton />}
         </div>
       </div>
-     
     </div>
   );
 }
 
-export default EditorPanel
+export default EditorPanel;
