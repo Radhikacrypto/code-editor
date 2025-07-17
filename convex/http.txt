@@ -13,9 +13,7 @@ Saves the user into your Convex database
 
 🔍 Step-by-Step Explanation
 1. 🚪 We’re creating an API route: /clerk-webhook
-ts
-Copy
-Edit
+
 const http = httpRouter();
 http.route({
   path: "/clerk-webhook",
@@ -23,9 +21,7 @@ http.route({
 We define an HTTP POST endpoint at /clerk-webhook. Clerk will send new user events to this endpoint.
 
 2. 🔑 Get the secret key
-ts
-Copy
-Edit
+
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 This key is secret and stored in .env. It’s used to verify that the webhook is truly from Clerk, not some hacker.
 
@@ -103,9 +99,7 @@ name: First + last name
 
 Then we save this info in the Convex DB using:
 
-ts
-Copy
-Edit
+
 await ctx.runMutation(api.users.syncUser, {
   userId: id,
   email,
