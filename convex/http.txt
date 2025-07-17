@@ -1,0 +1,182 @@
+✅ What is this file for?
+This code:
+
+Listens for events from Clerk (like when a user signs up).
+
+Verifies that the request came from Clerk (using Svix).
+
+If it’s a new user (user.created), it:
+
+Gets the user’s ID, email, and name
+
+Saves the user into your Convex database
+
+🔍 Step-by-Step Explanation
+1. 🚪 We’re creating an API route: /clerk-webhook
+ts
+Copy
+Edit
+const http = httpRouter();
+http.route({
+  path: "/clerk-webhook",
+  method: "POST",
+We define an HTTP POST endpoint at /clerk-webhook. Clerk will send new user events to this endpoint.
+
+2. 🔑 Get the secret key
+ts
+Copy
+Edit
+const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+This key is secret and stored in .env. It’s used to verify that the webhook is truly from Clerk, not some hacker.
+
+3. 📬 Get special headers from Clerk
+ts
+Copy
+Edit
+const svix_id = request.headers.get("svix-id");
+const svix_signature = request.headers.get("svix-signature");
+const svix_timestamp = request.headers.get("svix-timestamp");
+Clerk uses a service called Svix to send webhooks securely. These 3 headers are used to verify the webhook.
+
+svix-id: Unique ID of the webhook
+
+svix-signature: Signature that proves it’s real
+
+svix-timestamp: When it was sent
+
+4. ❌ If any of these are missing → reject it
+ts
+Copy
+Edit
+if (!svix_id || !svix_signature || !svix_timestamp) {
+  return new Response("Errors occurred -- no svix headers", { status: 400 });
+}
+If even one is missing, we return an error — it's not safe to process this request.
+
+5. 📦 Read the request body (the event data)
+ts
+Copy
+Edit
+const payload = await request.json();
+const body = JSON.stringify(payload);
+We read the JSON body Clerk sent — this contains user info like email, id, first_name, etc.
+
+6. ✅ Verify the webhook using Svix
+ts
+Copy
+Edit
+const wh = new Webhook(webhookSecret);
+evt = wh.verify(body, {
+  "svix-id": svix_id,
+  "svix-signature": svix_signature,
+  "svix-timestamp": svix_timestamp,
+}) as WebhookEvent;
+We use Svix's library to check if the body + headers match the signature.
+
+If correct → it's a real Clerk request ✅
+
+If not → we reject it ❌
+
+7. 🎯 Handle the event user.created
+ts
+Copy
+Edit
+if (eventType === "user.created") {
+Clerk sends many event types (user.updated, user.deleted, etc).
+
+We only care about new users: user.created
+
+8. 🧑 Get user info and save to DB
+ts
+Copy
+Edit
+const { id, email_addresses, first_name, last_name } = evt.data;
+const email = email_addresses[0].email_address;
+const name = `${first_name || ""} ${last_name || ""}`.trim();
+We extract:
+
+id: Clerk user ID
+
+email: User’s email
+
+name: First + last name
+
+Then we save this info in the Convex DB using:
+
+ts
+Copy
+Edit
+await ctx.runMutation(api.users.syncUser, {
+  userId: id,
+  email,
+  name,
+});
+This calls your custom Convex mutation syncUser which inserts/updates the user in DB.
+
+9. 🎉 Final Response
+ts
+Copy
+Edit
+return new Response("webhook processed successfully", { status: 200 });
+After everything is done correctly, we tell Clerk: ✅ Done!
+
+📊 WORKING FLOW DIAGRAM
+pgsql
+Copy
+Edit
+          ┌────────────────────┐
+          │    Clerk System    │
+          └────────┬───────────┘
+                   │
+                   ▼
+       (sends user.created webhook)
+                   │
+                   ▼
+      ┌───────────────────────────┐
+      │   POST /clerk-webhook     │
+      └────────┬──────────────────┘
+               │
+               ▼
+      Check: Do we have secret key?
+               │
+               ▼
+    Check: Are svix headers present?
+               │
+               ▼
+     Verify: Is webhook valid (Svix)?
+               │
+               ▼
+    YES → Is event type `user.created`?
+               │
+               ▼
+   YES → Extract user info (ID, name, email)
+               │
+               ▼
+     Save user to Convex DB via `syncUser`
+               │
+               ▼
+     ✅ Done: Return status 200 to Clerk
+🧠 Final Summary (One-Liner)
+This file receives new user events from Clerk, verifies them using Svix, and saves the user info into Convex DB securely.
+
+Would you like me to now show the syncUser mutation code too and explain that?
+
+
+
+
+
+
+
+
+Is this conversation helpful so far?
+
+
+
+
+Ask ChatGPT
+
+
+
+Tools
+
+
